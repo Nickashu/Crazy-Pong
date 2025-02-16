@@ -5,15 +5,13 @@ public class CameraController : MonoBehaviour {
     private Camera mainCamera;
     [SerializeField] private GameObject player1, player2, ball;
     [SerializeField] private float playerHeightMult = 0.21f, playerWidthMult = 0.03f, playerOffsetMult = 0.04f, ballScaleMult=0.3f;
+    public static Vector2 bottomLeft, topRight;   //Limites da tela
 
     void Start() {
         mainCamera = Camera.main;
+        bottomLeft = Camera.main.ViewportToWorldPoint(new Vector2(0, 0));
+        topRight = Camera.main.ViewportToWorldPoint(new Vector2(1, 1));
 
-        player1.SetActive(true);
-        player2.SetActive(true);
-    }
-
-    void Update() {
         float screenHeightUnits = mainCamera.orthographicSize * 2; //Altura da câmera em unidades de mundo
         float screenWidthUnits = screenHeightUnits * mainCamera.aspect; //Largura baseada no aspecto
 
@@ -29,6 +27,9 @@ public class CameraController : MonoBehaviour {
         float halfScreenWidth = screenWidthUnits / 2;
         player1.transform.position = new Vector2(-halfScreenWidth + playerOffset, 0);
         player2.transform.position = new Vector2(halfScreenWidth - playerOffset, 0);
+
+        player1.SetActive(true);
+        player2.SetActive(true);
     }
 }
 
