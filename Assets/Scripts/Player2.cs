@@ -11,7 +11,7 @@ public class Player2 : MonoBehaviour {
     private Vector2 movementDirection;
 
     private float minY, maxY;
-    private bool enableRandomMovementCoroutine = false, enableNormalMovementCoroutine = false;
+    private bool enableRandomMovementCoroutine, enableNormalMovementCoroutine;
 
     void Start() {
         rb = GetComponent<Rigidbody2D>();
@@ -19,33 +19,40 @@ public class Player2 : MonoBehaviour {
         //Define os limites baseado no tamanho do sprite do jogador:
         float limitBottomY = CameraController.bottomLeft.y + offSetLimits, limitTopY = CameraController.topRight.y - offSetLimits;
         float playerHalfHeight = transform.localScale.y / 2;
-
         minY = limitBottomY + playerHalfHeight;
         maxY = limitTopY - playerHalfHeight;
+
+        enableRandomMovementCoroutine = true;
+        enableNormalMovementCoroutine = true;
     }
 
     void FixedUpdate() {
-        if(Math.Abs(transform.position.x-ball.transform.position.x) < Math.Abs(player1.transform.position.x-ball.transform.position.x)) {
-            enableRandomMovementCoroutine = true;
-            StopCoroutine(RandomMovement());
-            if(enableNormalMovementCoroutine){
-                StartCoroutine(NormalMovement());
-                enableNormalMovementCoroutine = false;
+        if(!GameController.gameOver){
+            if(Math.Abs(transform.position.x-ball.transform.position.x) < Math.Abs(player1.transform.position.x-ball.transform.position.x)) {
+                enableRandomMovementCoroutine = true;
+                StopCoroutine(RandomMovement());
+                if(enableNormalMovementCoroutine){
+                    StartCoroutine(NormalMovement());
+                    enableNormalMovementCoroutine = false;
+                }
             }
-        }
-        else {
-            enableNormalMovementCoroutine = true;
-            StopCoroutine(NormalMovement());
-            if(enableRandomMovementCoroutine){
-                StartCoroutine(RandomMovement());
-                enableRandomMovementCoroutine = false;
+            else {
+                enableNormalMovementCoroutine = true;
+                StopCoroutine(NormalMovement());
+                if(enableRandomMovementCoroutine){
+                    StartCoroutine(RandomMovement());
+                    enableRandomMovementCoroutine = false;
+                }
             }
-        }
 
-        if(movementDirection != Vector2.zero) {
-            Vector2 newPosition = (Vector2)transform.position + movementDirection * movementSpeed * Time.fixedDeltaTime;
-            newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
-            rb.MovePosition(newPosition);
+            if(movementDirection != Vector2.zero) {
+                Vector2 newPosition = (Vector2)transform.position + movementDirection * movementSpeed * Time.fixedDeltaTime;
+                newPosition.y = Mathf.Clamp(newPosition.y, minY, maxY);
+                rb.MovePosition(newPosition);
+            }
+        }
+        else{
+            StopAllCoroutines();
         }
     }
 
@@ -56,7 +63,7 @@ public class Player2 : MonoBehaviour {
             movementDirection = Vector2.down;
         else
             movementDirection = Vector2.zero;
-        yield return new WaitForSeconds(UnityEngine.Random.Range(0.25f, 0.7f));
+        yield return new WaitForSeconds(UnityEngine.Random.Range(0.2f, 0.8f));
         enableNormalMovementCoroutine = true;
     }
 
